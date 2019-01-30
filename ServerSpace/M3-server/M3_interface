@@ -1,0 +1,31 @@
+61.183.254.54/m3_server/predict
+
+request_data = {"request_id": request_id,  # request_id should be identity
+            	"device_id": device_id,  # device_id should be identity
+            	"shelve_level": shelve_level,  # should be one of 1, 2, 3, 4
+            	"request_type": "take_goods_simple",  # should be take_goods_simple
+            	"image_b": IMAGE_B,  # image url after closing door of this action
+            	"image_c": IMAGE_C,  # image url after closing door of the last action for renew_goods
+		"pointmap_c":pointmap_c # point map of IMAGE_C}
+
+# pointmap_c
+ should be {string(sku_id):[[string(x), string(y)], [...]], ...}, like {"1210": [["0.51375", "0.84500"]], "184": [["0.36875", "0.85000"], ["0.65375", "0.73000"]]}
+
+
+result_data = {"request_success": True,
+               "error_code": 0,
+               "error_description": "no error",
+               "predict_result": {},
+               "save_result":{},
+               "web_time": {}}
+
+# "predict_result"
+{"skucount_b": sku count of IMAGE_B #  {string(sku_id):int(count),...}
+"if_use":use flag of predict # 1 or 0
+"why_not":reason not use}
+
+# "error_code"
+1: request data can not get properly
+2: can not process the image url
+3: not support request type
+4: cost time too long

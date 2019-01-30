@@ -1,0 +1,45 @@
+This file contains all the models and program for this whole architectural solution
+1. abnormal-detection:    for detecting the abnormal images, like more than two classes in one track.
+2. change-detection:      for detecting two images whether is changed or not.
+3. heatmap-all-count:     for counting the amount of items in one image.
+4. heatmap-detection:     for detecting the heatmap point of each item in the image.
+5. pointchange-detection: for detecting the changed heatmap points of the taken items in the image.
+6. similarity-matrix:     for detecting the corresponding similar items between two images.
+7. track-count:           for counting the number of items in each track (total 7 tracks in one image).
+
+
+                                                         -->normal   ==> track-count
+Input image ==> change-detection ==> abnormal-detection  -->abnormal ==> heatmap-all-count --> pointchange-detection
+                                                                                           --> point-detection ==> similarity-matrix
+Image_A: the image before opening the door
+Image_B: the image after closing the door
+Point_A: the heatmap points of items in Image_A
+Point_B: the heatmap points of items in Image_B
+
+M3: utilize two images and the corresponding  heatmap points to detect the sku and count the amount
+1:Input(Image_A, Image_B) ==> Model(change-detection) ==> 1:Output(1:unchanged or 0:changed)
+if (1:Output == changed):                    # if big changes happened in two images, then do other processing
+    2:Input(Image_B) ==> Model(abnormal-detection) ==> 2:Output(0:normal or 1:abnormal)
+    if (2:Output == normal):                 # if two images are normal, then do the track counting
+        3:Input(Image_B) ==> Model(track-count) ==> 3:Output([N1:N7] the number of items of 7 tracks)
+    else:                                    # if input image is abnormal, cannot do track counting, then do the M3 algorithm
+        4:Input(Image_B) ==> Model(heatmap-all-count) ==> 4:Output(N: the number of all items in Image_B)
+        5:Input(Image_A, Image_B, Point_A) ==> Model(pointchange-detection) ==> 5:Output(heatmap: the point of the taken items in Image_A)
+        6:Input(Image_A, Image_B, Point_A) ==> Model(heatmap-detection) ==> 6:Output(heatmap: the heatmap points of Image_B, N:the number of items in Image_B)
+        7:Input(6:Output_heatmap) ==> postprocess ==> 7:Output(N: the number of points in heatmap)
+        8:Input(Image_A, Image_B, matrix(Point_A, Point_B)) ==> Model(similarity-matrix) ==> 8:Output(matrix: the similarity matrix of the corresponding items of two images)
+        9:Input(8:Output) ==> postprocess ==> 9:Output({SKU：N}: the number of each sku in Image_B))
+        if 4:Output == 6:Output_N == 7:Output == SUM(9:Output): #self-check the result
+            M3
+        else:
+            M1
+else:
+    M1
+
+对于每次交易，首先调用不变检测模型(change-detecion)，如果开门前图片A和关门后图片B出现较大变化，
+然后调用异常检测模型(abnormal-detection), 如果检测为正常图片， 则直接调用货道数数模型(track-count)；
+如果检测为异常图片，则需要调用M3算法：
+M3算法主要包含三个模型,全图数数模型(heatmap-all-count)，热点图检测(point-detection)和相似矩阵模型(similarity-matrix).
+
+全图数数模型用于自校验， 热点图检测用于检测图片B中的各物品对应的位置， 相似矩阵模型用于对图片B中每个商品与图片A中各商品进行相似性比较，把图片B中每个点所代表的商品与图片A最相似的商品匹配,
+这样就可以知道关门后图片B个品类商品的剩余数量。如果该剩余总数与全图数数模型结果一致，则自校验通过，即该算法结果视为有效。

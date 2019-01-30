@@ -1,0 +1,24 @@
+change-server: 不变检测服务器程序，部署在三台服务器上，分别负责运行二代机， 三代机高层和三代机矮层不变检测模型。
+
+61.183.254.56: 二代机不变检测,        	change_model:    V2_change-model-v9_0.9984_wudi.h5
+
+61.183.254.72: 三代机高层不变检测,    	change_model:    V3_high-height_change_model-v9_0.9961_wudi.h5
+
+61.183.254.53: 三代机矮层不变检测，  	change_model:    V3_low-height_change_model-v9_0.9969_wudi.h5
+
+
+
+M2-server: M2 异常 + 数数服务器，部署在两台服务器上， 共用一个异常检测模型， 但分别负责运行高层和矮层的数数模型。
+61.183.254.55: 三代机高层M2异常+数数，   count_model:     V3_high-height_single-count_model_v9lc_0.9926_wudi.h5
+					abnormal_model:  V3_single-abnormal_model_v8_sn_20181210.h5
+
+61.183.254.77: 三代机矮层M2异常+数数，   count_model:     V3_low-height_single_count_inception_resnet_v2_0.9593_wudi.h5
+					abnormal_model:  V3_single-abnormal_model_v8_sn_20181210.h5
+
+
+M3-server： 目前部署在一台服务器上，运行M3一期算法，即点图变化检测模型 + 全图数数模型
+61.183.254.54： 三代机M3点图变化检测，   count_model:     V3_high-height_all_count_model_v12_0.9821.h5
+                                        point_model:     V3_high-height_point_change_model_v5_0.9423_model.h5
+
+
+

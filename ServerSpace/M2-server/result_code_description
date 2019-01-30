@@ -1,0 +1,64 @@
+result structure of ai server
+
+result_data = {"request_success": False,
+                   "error_code": 0,
+                   "error_description": "no error",
+                   "predict_result": {},
+                   "save_result":{},
+                   "web_time": {}}
+
+-------------------------------------------------
+# "error_code"
+
+0: no error
+1: request data can not get properly
+2: can not process the image url
+3: not support request type
+4: cost time too long
+
+-------------------------------------------------
+# "predict_result"
+
+# 1. renew_goods_abnormal
+["single_abnormal"]   # 0 is normal, 1 is abnormal
+["single_abnormal_prob"]   # probility of predict
+
+# 2. renew_goods_count
+["count"] # 7 column's count
+["count_prob"] # probility of predict
+
+# 3. take_goods
+["single_abnormal"]   # 0 is normal, 1 is abnormal
+["single_abnormal_prob"]   # probility of predict
+["double_abnormal"]   # 0 is normal, 1 is abnormal
+["double_abnormal_prob"]   # probility of predict
+["sub_count"] # 7 column's sub count
+["sub_count_prob"] # probility of predict
+["count"] # 7 column's count
+["count_prob"] # probility of predict
+
+---------------------------------------------------
+# "save_result"
+
+# 1. renew_goods_abnormal
+["single_abnormal"]   # 0 is normal, 1 is abnormal
+["single_abnormal_prob"]   # probility of predict
+
+# 2. renew_goods_count
+["count_b"] # count of image b
+["count_b_prob"] # probility of count of image b
+
+# 3. take_goods
+["single_abnormal"]   # 0 is normal, 1 is abnormal
+["single_abnormal_prob"]   # probility of predict
+
+["double_abnormal"]   # 0 is normal, 1 is abnormal
+["double_abnormal_prob"]   # probility of predict
+
+["count_a"] # count of image a
+["count_a_prob"] # probility of count of image a
+
+["count_b"] # count of image b
+["count_b_prob"] # probility of count of image b
+
+------------------------------------------------------
